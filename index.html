@@ -1,8 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rooms3D Game</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #game-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <script>
@@ -28,12 +53,9 @@
     }
   </script>
 
-  <!-- КНОПКА -->
-  <button onclick="requestPayment()" style="position:absolute; top:10px; right:10px; z-index:10;">
-    Купить Утку 🦆
-  </button>
-
-  <!-- WebGL -->
-  <iframe src="app/index.html" width="100%" height="100%" frameborder="0"></iframe>
+  <!-- WebGL iframe -->
+  <div id="game-container">
+    <iframe src="app/index.html"></iframe>
+  </div>
 </body>
 </html>
