@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,10 +29,22 @@
   </style>
 </head>
 <body>
-  <!-- WebGL iframe -->
-  <div id="game-container">
-    <iframe src="app/index.html"></iframe>
-  </div>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+
+  // Подготовка WebApp
+  tg.ready?.();
+  tg.expand?.();
+
+  // Слушаем событие повторного входа
+  tg.onEvent?.("resume", function () {
+    console.log("🔄 Telegram WebApp resumed — перезагружаем iframe");
+
+    // Перезагружаем iframe, не всю страницу
+    const iframe = document.querySelector("iframe");
+    if (iframe) iframe.src = iframe.src;
+  });
+</script>
 </body>
 </html>
