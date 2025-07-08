@@ -1,50 +1,47 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rooms3D Game</title>
+  <meta charset="utf-8">
+  <title>My Unity Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Telegram API не нужен -->
+  <script src="app/Build/app.loader.js"></script> <!-- название файла зависит от Unity версии -->
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      width: 100%;
+      background: black;
       overflow: hidden;
-    }
-
-    #game-container {
-      position: absolute;
-      top: 0;
-      left: 0;
       height: 100%;
-      width: 100%;
     }
-
-    iframe {
+    #unity-canvas {
       width: 100%;
       height: 100%;
-      border: none;
+      background: black;
       display: block;
     }
   </style>
 </head>
 <body>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  const tg = window.Telegram.WebApp;
+  <canvas id="unity-canvas"></canvas>
 
-  // Подготовка WebApp
-  tg.ready?.();
-  tg.expand?.();
+  <script>
+    const canvas = document.getElementById("unity-canvas");
 
-  // Слушаем событие повторного входа
-  tg.onEvent?.("resume", function () {
-    console.log("🔄 Telegram WebApp resumed — перезагружаем iframe");
-
-    // Перезагружаем iframe, не всю страницу
-    const iframe = document.querySelector("iframe");
-    if (iframe) iframe.src = iframe.src;
-  });
-</script>
+    createUnityInstance(canvas, {
+      dataUrl: "Build/app.data",
+      frameworkUrl: "Build/app.framework.js",
+      codeUrl: "Build/app.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "MyCompany",
+      productName: "MyGame",
+      productVersion: "1.0"
+    }).then((unityInstance) => {
+      console.log("Unity запущен!");
+    }).catch((message) => {
+      alert("Ошибка запуска Unity: " + message);
+    });
+  </script>
 </body>
 </html>
