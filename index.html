@@ -5,8 +5,7 @@
   <title>My Unity Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Telegram API не нужен -->
-  <script src="app/Build/app.loader.js"></script> <!-- название файла зависит от Unity версии -->
+  <script src="app/Build/app.loader.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -39,26 +38,26 @@
       productVersion: "1.0"
     }).then((unityInstance) => {
       console.log("Unity запущен!");
+
+      // Telegram Web App
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+
+        let userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+        if (userId) {
+          console.log("Telegram user ID:", userId);
+          unityInstance.SendMessage("PauseMenuController", "SetPlayerId", userId.toString());
+        } else {
+          console.warn("Не удалось получить user.id из Telegram");
+        }
+      } else {
+        console.warn("Telegram WebApp не найден. Игрок будет без ID!");
+      }
+
     }).catch((message) => {
       alert("Ошибка запуска Unity: " + message);
+      console.error(message);
     });
-
-     // Ждём готовности Telegram Web App
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.ready();
-
-      // Получаем уникальный ID игрока
-      let userId = window.Telegram.WebApp.initDataUnsafe.user.id;
-      console.log("Telegram user ID:", userId);
-
-      // Передаём в Unity
-      unityInstance.SendMessage("PauseMenuController", "SetPlayerId", userId.toString());
-    } else {
-      console.warn("Telegram WebApp не найден. Игрок будет без ID!");
-    }
-  }).catch((message) => {
-    alert("Ошибка запуска Unity: " + message);
-  });
   </script>
 </body>
 </html>
