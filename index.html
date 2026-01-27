@@ -5,7 +5,7 @@
   <title>My Unity Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script src="app/Build/app.loader.js"></script>
+<script src="/static/app/Build/app.loader.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -29,9 +29,9 @@
     const canvas = document.getElementById("unity-canvas");
 
     createUnityInstance(canvas, {
-      dataUrl: "app/Build/app.data",
-      frameworkUrl: "app/Build/app.framework.js",
-      codeUrl: "app/Build/app.wasm",
+      dataUrl: "/static/app/Build/app.data",
+      frameworkUrl: "/static/app/Build/app.framework.js",
+      codeUrl: "/static/app/Build/app.wasm",
       streamingAssetsUrl: "StreamingAssets",
       companyName: "MyCompany",
       productName: "MyGame",
