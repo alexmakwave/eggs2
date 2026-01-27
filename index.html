@@ -42,6 +42,23 @@
     }).catch((message) => {
       alert("Ошибка запуска Unity: " + message);
     });
+
+     // Ждём готовности Telegram Web App
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+
+      // Получаем уникальный ID игрока
+      let userId = window.Telegram.WebApp.initDataUnsafe.user.id;
+      console.log("Telegram user ID:", userId);
+
+      // Передаём в Unity
+      unityInstance.SendMessage("PauseMenuController", "SetPlayerId", userId.toString());
+    } else {
+      console.warn("Telegram WebApp не найден. Игрок будет без ID!");
+    }
+  }).catch((message) => {
+    alert("Ошибка запуска Unity: " + message);
+  });
   </script>
 </body>
 </html>
