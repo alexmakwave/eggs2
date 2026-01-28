@@ -53,12 +53,11 @@
         if (userId) {
           console.log("Telegram user ID:", userId);
 
-          // ❗ ИМЯ GAMEOBJECT, А НЕ СКРИПТА
-          unityInstance.SendMessage(
-            "Canvas",              // ← имя объекта в сцене
-            "SetPlayerId",          // метод в PauseMenuController
-            userId.toString()
-          );
+          // ❗ ИМЯ GAMEOBJECT в сцене (Canvas), метод из скрипта PauseMenuController
+          unityInstance.SendMessage("Canvas", "SetPlayerId", userId.toString());
+
+          // сразу запросить баланс с сервера
+          unityInstance.SendMessage("Canvas", "FetchTotalBalls", "");
         } else {
           console.warn("Telegram user.id не найден");
         }
