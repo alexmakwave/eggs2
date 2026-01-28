@@ -3,6 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>My Unity Game</title>
+  
+  <!-- ВАЖНО: Подключаем API Телеграма -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/static/app/Build/app.loader.js"></script>
   <style>
@@ -40,33 +44,41 @@
 
       let playerId = null;
 
-      // ===== Telegram Web App =====
+      // ===== 1. Пробуем получить через Telegram Web App =====
       if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
-        tg.onEvent("themeChanged", () => {}); // активация WebApp
         tg.ready();
+        tg.expand(); // Разворачиваем приложение
 
-        // Пробуем получить ID пользователя через Telegram
-        playerId = tg.initDataUnsafe?.user?.id;
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+          playerId = tg.initDataUnsafe.user.id;
+          console.log("ID получен из Telegram WebApp:", playerId);
+        }
       }
 
-      // ===== fallback: читаем player_id из URL =====
+      // ===== 2. Fallback: если ID нет, ищем в URL (для тестов) =====
       if (!playerId) {
         const urlParams = new URLSearchParams(window.location.search);
-        playerId = urlParams.get("player_id");
+        const urlId = urlParams.get("player_id");
+        if (urlId && urlId !== "{id}") { // Игнорируем текст "{id}"
+            playerId = urlId;
+            console.log("ID получен из URL:", playerId);
+        }
       }
 
+      // ===== 3. Отправка в Unity =====
       if (playerId) {
-        console.log("Player ID найден:", playerId);
-        // ❗ Имя GameObject, на котором висит PauseMenuController
+        // УБЕДИТЕСЬ, ЧТО В UNITY ОБЪЕКТ НАЗЫВАЕТСЯ "Canvas"
         unityInstance.SendMessage("Canvas", "SetPlayerId", playerId.toString());
       } else {
-        console.warn("Player ID не найден ни через WebApp, ни в URL. Игра запущена без ID.");
+        console.warn("Player ID не найден. Проверьте запуск через Telegram.");
+        // Можно показать alert для отладки:
+        // alert("ID не найден! Зайдите через бота.");
       }
 
     }).catch((err) => {
       console.error("Ошибка запуска Unity:", err);
-      alert("Ошибка запуска Unity");
+      alert("Ошибка запуска Unity: " + err);
     });
   </script>
 </body>
