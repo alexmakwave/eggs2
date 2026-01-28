@@ -4,9 +4,7 @@
   <meta charset="utf-8">
   <title>My Unity Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <script src="/static/app/Build/app.loader.js"></script>
-
   <style>
     html, body {
       margin: 0;
@@ -15,7 +13,6 @@
       overflow: hidden;
       height: 100%;
     }
-
     #unity-canvas {
       width: 100%;
       height: 100%;
@@ -24,7 +21,6 @@
     }
   </style>
 </head>
-
 <body>
   <canvas id="unity-canvas"></canvas>
 
@@ -40,29 +36,27 @@
       productName: "MyGame",
       productVersion: "1.0"
     }).then((unityInstance) => {
+      console.log("Unity запущен!");
 
-      console.log("Unity запущен");
-
-      // ===== Telegram WebApp =====
+      // Telegram Web App
       if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
+
+        tg.onEvent("themeChanged", () => {}); // для активации Telegram WebApp
         tg.ready();
 
-        const userId = tg.initDataUnsafe?.user?.id;
-
-        if (userId) {
-          console.log("Telegram user ID:", userId);
-
-          // ❗ ИМЯ GAMEOBJECT в сцене (Canvas), метод из скрипта PauseMenuController
-          unityInstance.SendMessage("Canvas", "SetPlayerId", userId.toString());
-
-          // сразу запросить баланс с сервера
-          unityInstance.SendMessage("Canvas", "FetchTotalBalls", "");
-        } else {
-          console.warn("Telegram user.id не найден");
-        }
+        // Подождём немного, иногда initDataUnsafe ещё не заполнен
+        setTimeout(() => {
+          const userId = tg.initDataUnsafe?.user?.id;
+          if (userId) {
+            console.log("Telegram user ID:", userId);
+            unityInstance.SendMessage("Canvas", "SetPlayerId", userId.toString());
+          } else {
+            console.warn("Telegram user.id не найден. Игра запущена без ID.");
+          }
+        }, 100); // 100мс задержка
       } else {
-        console.warn("Telegram WebApp не обнаружен (запуск вне Telegram)");
+        console.warn("Telegram WebApp не обнаружен, игра запущена в браузере.");
       }
 
     }).catch((err) => {
