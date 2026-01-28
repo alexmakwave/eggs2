@@ -5,7 +5,8 @@
   <title>My Unity Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="/static/app/Build/app.loader.js"></script>
+  <script src="/static/app/Build/app.loader.js"></script>
+
   <style>
     html, body {
       margin: 0;
@@ -14,6 +15,7 @@
       overflow: hidden;
       height: 100%;
     }
+
     #unity-canvas {
       width: 100%;
       height: 100%;
@@ -22,6 +24,7 @@
     }
   </style>
 </head>
+
 <body>
   <canvas id="unity-canvas"></canvas>
 
@@ -37,26 +40,35 @@
       productName: "MyGame",
       productVersion: "1.0"
     }).then((unityInstance) => {
-      console.log("Unity запущен!");
 
-      // Telegram Web App
+      console.log("Unity запущен");
+
+      // ===== Telegram WebApp =====
       if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
+        const tg = window.Telegram.WebApp;
+        tg.ready();
 
-        let userId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
+        const userId = tg.initDataUnsafe?.user?.id;
+
         if (userId) {
           console.log("Telegram user ID:", userId);
-          unityInstance.SendMessage("PauseMenuController", "SetPlayerId", userId.toString());
+
+          // ❗ ИМЯ GAMEOBJECT, А НЕ СКРИПТА
+          unityInstance.SendMessage(
+            "Canvas",              // ← имя объекта в сцене
+            "SetPlayerId",          // метод в PauseMenuController
+            userId.toString()
+          );
         } else {
-          console.warn("Не удалось получить user.id из Telegram");
+          console.warn("Telegram user.id не найден");
         }
       } else {
-        console.warn("Telegram WebApp не найден. Игрок будет без ID!");
+        console.warn("Telegram WebApp не обнаружен (запуск вне Telegram)");
       }
 
-    }).catch((message) => {
-      alert("Ошибка запуска Unity: " + message);
-      console.error(message);
+    }).catch((err) => {
+      console.error("Ошибка запуска Unity:", err);
+      alert("Ошибка запуска Unity");
     });
   </script>
 </body>
