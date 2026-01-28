@@ -38,25 +38,30 @@
     }).then((unityInstance) => {
       console.log("Unity запущен!");
 
-      // Telegram Web App
+      let playerId = null;
+
+      // ===== Telegram Web App =====
       if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
-
-        tg.onEvent("themeChanged", () => {}); // для активации Telegram WebApp
+        tg.onEvent("themeChanged", () => {}); // активация WebApp
         tg.ready();
 
-        // Подождём немного, иногда initDataUnsafe ещё не заполнен
-        setTimeout(() => {
-          const userId = tg.initDataUnsafe?.user?.id;
-          if (userId) {
-            console.log("Telegram user ID:", userId);
-            unityInstance.SendMessage("Canvas", "SetPlayerId", userId.toString());
-          } else {
-            console.warn("Telegram user.id не найден. Игра запущена без ID.");
-          }
-        }, 100); // 100мс задержка
+        // Пробуем получить ID пользователя через Telegram
+        playerId = tg.initDataUnsafe?.user?.id;
+      }
+
+      // ===== fallback: читаем player_id из URL =====
+      if (!playerId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        playerId = urlParams.get("player_id");
+      }
+
+      if (playerId) {
+        console.log("Player ID найден:", playerId);
+        // ❗ Имя GameObject, на котором висит PauseMenuController
+        unityInstance.SendMessage("Canvas", "SetPlayerId", playerId.toString());
       } else {
-        console.warn("Telegram WebApp не обнаружен, игра запущена в браузере.");
+        console.warn("Player ID не найден ни через WebApp, ни в URL. Игра запущена без ID.");
       }
 
     }).catch((err) => {
